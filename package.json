@@ -1,0 +1,20 @@
+{
+  "name": "hellonodejs",
+  "version": "1.0.0",
+  "description": "hellonodejs",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "keywords": [
+    "hellonodejs"
+  ],
+  "author": "alevz",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "nodemon": "^2.0.9"
+  }
+}
