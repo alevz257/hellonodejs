@@ -16,7 +16,8 @@ app.use(function (req,res,next){
 
 app.get('/', (req,res) => {
   console.log(JSON.stringify(req.headers));
-  res.status(200).send(`Ok data is running! headers recieved:${JSON.stringify(req.headers)}`);
+  //res.status(200).send(`Ok data is running - lets remove header ! headers recieved:${JSON.stringify(req.headers)}`);
+  res.status(200).send(`Ok data is running - lets remove header !`);
 });
 
 app.post('/read', (req,res) => {
