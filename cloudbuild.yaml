@@ -22,16 +22,20 @@ steps:
   args:
   - '-c'
   - |
+    echo 'test file'
     cd baseline
     cp depl.yaml depl-1.yaml
     sed "s/COMMIT_SHA/${SHORT_SHA}/g" > depl-1.yaml
     cp depl-1.yaml ../app/depl.yaml
+    echo 'test to set'
     set -x
     git config user.email $(gcloud auth list --filter=status:ACTIVE --format='value(account)') && \
     git config user.name "Cloud Build Alevz"
+    echo 'fetch'
     git fetch origin main && git checkout test && \
     git add -A
     git commit -m "testing push file"
+    echo 'push'
     git push origin test
   volumes:
   - name: 'ssh'
