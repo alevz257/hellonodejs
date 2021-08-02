@@ -17,7 +17,7 @@ kind: Deployment
 metadata:
   name: hellonodejs
 spec:
-  replicas: 1
+  replicas: 4
   selector:
     matchLabels:
       app: hellonodejs
@@ -30,7 +30,7 @@ spec:
       containers:
       # [START]
       - name: hellonodejs
-        image: gcr.io/alevz-demo-1/sticky:v3.3
+        image: gcr.io/alevz-demo-1/hellonodejs:COMMIT_SHA
       # [END]ls
 ---
 apiVersion: apps/v1
@@ -38,7 +38,7 @@ kind: Deployment
 metadata:
   name: hellonodejsb
 spec:
-  replicas: 1
+  replicas: 5
   selector:
     matchLabels:
       app: hellonodejs
@@ -52,7 +52,7 @@ spec:
       containers:
       # [START]
       - name: hellonodejs
-        image: gcr.io/alevz-demo-1/sticky:v3.3
+        image: gcr.io/alevz-demo-1/hellonodejs:COMMIT_SHA
       # [END]
 ---
 apiVersion: networking.istio.io/v1alpha3
@@ -111,3 +111,4 @@ spec:
     - name: v2
       labels:
         version: v2
+---
