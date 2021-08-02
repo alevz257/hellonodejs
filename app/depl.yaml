@@ -1,0 +1,114 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: hellonodejs
+spec:
+  ports:
+  - port: 8091
+    targetPort: 8091
+    protocol: TCP
+    name: http
+  selector:
+    app: hellonodejs
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hellonodejs
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: hellonodejs
+  template:
+    metadata:
+      labels:
+        app: hellonodejs
+        version: v1
+    spec:
+      containers:
+      # [START]
+      - name: hellonodejs
+        image: gcr.io/alevz-demo-1/hellonodejs:COMMIT_SHA
+      # [END]ls
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hellonodejsb
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: hellonodejs
+      version: v2
+  template:
+    metadata:
+      labels:
+        app: hellonodejs
+        version: v2
+    spec:
+      containers:
+      # [START]
+      - name: hellonodejs
+        image: gcr.io/alevz-demo-1/hellonodejs:COMMIT_SHA
+      # [END]
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: ingress-gateway
+  namespace: istio-system
+spec:
+  selector:
+    istio: ingressgateway # use istio default controller
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: ingressvs
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - istio-system/ingress-gateway
+  http:
+    - match:
+      - uri:
+          exact: /
+      route:
+      - destination:
+          host: hellonodejs
+          port:
+            number: 8091
+          subset: v1
+        weight: 60
+      - destination:
+          host: hellonodejs
+          port:
+            number: 8091
+          subset: v2
+        weight: 40
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: hellonodejs
+spec:
+  host: hellonodejs
+  subsets:
+    - name: v1
+      labels:
+        version: v1
+    - name: v2
+      labels:
+        version: v2
+---
