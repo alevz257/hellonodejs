@@ -5,14 +5,28 @@ steps:
 - name: 'gcr.io/cloud-builders/docker'
   id: Push to GCR
   args: ['push', 'gcr.io/$PROJECT_ID/hellonodejs:$SHORT_SHA']
-- name: 'gcr.io/cloud-builders/gcloud'
+- name: 'gcr.io/cloud-builders/git'
   id: Copy the new yaml file
-  entrypoint: /bin/sh
+  secretEnv: ['SSH_KEY']
+  entrypoint: 'bash'
   args:
   - '-c'
   - |
+    echo "$$SSH_KEY" >> /root/.ssh/id_rsa
+    chmod 400 /root/.ssh/id_rsa
+    cp known_hosts.github /root/.ssh/known_hosts
     cd baseline &&
     cp depl.yaml depl-1.yaml
     sed "s/COMMIT_SHA/${SHORT_SHA}/g" > depl-1.yaml
-    cp depl-1.yaml ../app/depl.yaml    
+    cp depl-1.yaml ../app/depl.yaml
+    git add -A
+    git commit -m "testing push file"
+    git push origin main
+  volumes:
+  - name: 'ssh'
+    path: /root/.ssh
+availableSecrets:
+  secretManager:
+  - versionName: projects/966837857153/secrets/github-secret/versions/latest
+    env: 'SSH_KEY'
 images: ['gcr.io/$PROJECT_ID/hellonodejs:$SHORT_SHA']
