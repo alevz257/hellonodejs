@@ -5,7 +5,6 @@ steps:
 - name: 'gcr.io/cloud-builders/docker'
   id: Push to GCR
   args: ['push', 'gcr.io/$PROJECT_ID/hellonodejs:$SHORT_SHA']
-images: ['gcr.io/$PROJECT_ID/hellonodejs:$SHORT_SHA']
 - name: 'gcr.io/cloud-builders/gcloud'
   id: Copy the new yaml file
   entrypoint: /bin/sh
@@ -15,5 +14,5 @@ images: ['gcr.io/$PROJECT_ID/hellonodejs:$SHORT_SHA']
     cd baseline &&
     cp depl.yaml depl-1.yaml
     sed "s/COMMIT_SHA/${SHORT_SHA}/g" > depl-1.yaml
-    cp depl-1.yaml ../app/depl.yaml
-    
+    cp depl-1.yaml ../app/depl.yaml    
+images: ['gcr.io/$PROJECT_ID/hellonodejs:$SHORT_SHA']
