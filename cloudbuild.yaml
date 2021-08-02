@@ -33,6 +33,9 @@ steps:
     git add -A
     git commit -m "testing push file"
     git push origin test
+  volumes:
+  - name: 'ssh'
+    path: /root/.ssh
 availableSecrets:
   secretManager:
   - versionName: projects/966837857153/secrets/github-secret/versions/latest
