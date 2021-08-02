@@ -6,7 +6,7 @@ steps:
   id: Push to GCR
   args: ['push', 'gcr.io/$PROJECT_ID/hellonodejs:$SHORT_SHA']
 - name: 'gcr.io/cloud-builders/git'
-  id: Copy the new yaml file
+  id: Set SSH Key
   secretEnv: ['SSH_KEY']
   entrypoint: 'bash'
   args:
@@ -14,14 +14,25 @@ steps:
   - |
     echo "$$SSH_KEY" >> /root/.ssh/id_rsa
     chmod 400 /root/.ssh/id_rsa
-    cp known_hosts.github /root/.ssh/known_hosts
-    cd baseline &&
+    cp known_hosts.github /root/.ssh/known_hostsa
+  volumes:
+  - name: 'ssh'
+    path: /root/.ssh
+- name: 'gcr.io/cloud-builders/git'
+  args:
+  - '-c'
+  - |
+    cd baseline
     cp depl.yaml depl-1.yaml
     sed "s/COMMIT_SHA/${SHORT_SHA}/g" > depl-1.yaml
     cp depl-1.yaml ../app/depl.yaml
+    set -x
+    git config user.email $(gcloud auth list --filter=status:ACTIVE --format='value(account)') && \
+    git config user.name "Cloud Build Alevz"
+    git fetch origin main && git checkout test && \
     git add -A
     git commit -m "testing push file"
-    git push origin main
+    git push origin test
 availableSecrets:
   secretManager:
   - versionName: projects/966837857153/secrets/github-secret/versions/latest
